@@ -1,0 +1,18 @@
+{% if user.is_authenticated %}
+  {% load contacts_tags %}
+  {% get_contact_formset user as contacts %}
+  {% create_contact_form as contact_form %}
+
+  <div id="add-my-contacts">
+    {% for c in contacts %}
+      <div class="control-group">
+        {{ c.type }}
+        {{ c.account }}
+        <a href="{% url 'contacts_delete' c.instance.pk %}" class="btn btn-default btn-delete glyphicon glyphicon-minus" title="Удалить контакт"></a>
+      </div>
+    {% endfor %}
+    <div class="dynamic control-group">
+      {{ contact_form.type }} {{ contact_form.account }} <a href="{% url 'contacts_create' %}" class="btn btn-default btn-create glyphicon glyphicon-plus" title="Сохранить контакт"></a>
+    </div>
+  </div>
+{% endif %}

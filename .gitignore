@@ -1,0 +1,8 @@
+.env/
+.eggs/
+*.pyc
+*.egg/
+*.egg-info/
+htmlcov/
+.coverage
+

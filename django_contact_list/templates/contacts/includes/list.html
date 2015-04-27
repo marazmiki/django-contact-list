@@ -1,0 +1,5 @@
+<ul class="list-unstyled contact-list">
+    {% for c in user.contacts.all %}
+        <li class="contact contact-{{ c.type }}"><b>{{ c.get_type_display }}:</b> {{ c.html|safe }}</li>
+    {% endfor %}
+</ul>
