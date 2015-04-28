@@ -5,7 +5,6 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.core.validators import validate_email, URLValidator
 from django.utils.translation import ugettext_lazy as _
 
@@ -21,7 +20,7 @@ class Backend(object):
         pass
 
     def get_link(self, value):
-        return reverse('go_away') + '?link=' + value
+        return value
 
     def get_text(self, value):
         return value

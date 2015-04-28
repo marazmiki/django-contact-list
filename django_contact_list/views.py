@@ -6,10 +6,14 @@ from __future__ import absolute_import
 from __future__ import division
 from rest_framework import generics, serializers, fields, permissions
 from django_contact_list.models import Contact
+from django_contact_list.utils import get_available_backends
 
 
 class ContactSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=fields.CurrentUserDefault())
+    account = serializers.CharField(required=True)
+    type = serializers.ChoiceField(choices=get_available_backends(),
+                                   required=True)
 
     class Meta(object):
         model = Contact

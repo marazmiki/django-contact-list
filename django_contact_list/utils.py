@@ -18,9 +18,10 @@ def get_available_backends():
                     (code, back),
                 )
             continue
-        backends += (
-            (key, back),
-        )
+        else:
+            backends += (
+                (key, val),
+            )
     return backends
 
 
