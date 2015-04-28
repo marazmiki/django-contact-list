@@ -197,7 +197,7 @@ class TestPhoneBackend(test.APITestCase):
 
     def test_nofollow(self):
         self.assertNotIn('nofollow',
-                      backends.PhoneBackend().get_html('+79051234567'))
+                         backends.PhoneBackend().get_html('+79051234567'))
 
 
 class TestICQBackend(test.APITestCase):
@@ -231,5 +231,3 @@ class TestJabberBackend(test.APITestCase):
     def test_link(self):
         self.assertEqual('xmpp:serg@google.com',
                          backends.JabberBackend().get_link('serg@google.com'))
-
-
