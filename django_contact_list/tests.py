@@ -142,6 +142,7 @@ class TestGetBackend(test.APITestCase):
     'InstagramBackend'
 ]
 
+
 def load_tests(loader, tests, ignore):
     tests.addTests([
         doctest.DocTestSuite(social, optionflags=doctest.ELLIPSIS),

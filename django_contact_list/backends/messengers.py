@@ -37,17 +37,17 @@ class ICQBackend(Backend):
     >>> backend.validate('1234')
     Traceback (most recent call last):
       ...
-    ValidationError: {u'__all__': [u'ICQ number can be from 5 to 9 chars in length']}
+    ValidationError: ...
 
     >>> backend.validate('1234567890')
     Traceback (most recent call last):
       ...
-    ValidationError: {u'__all__': [u'ICQ number can be from 5 to 9 chars in length']}
+    ValidationError: ...
 
     >>> backend.validate('non-digit')
     Traceback (most recent call last):
       ...
-    ValidationError: {u'__all__': [u'ICQ number can only consist of numbers']}
+    ValidationError: ...
 
     >>> str(backend.get_link('123456'))
     'https://icq.com/people/123456'
