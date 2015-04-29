@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
-from django_contact_list.exceptions import InvalidAccountName
 from django.utils.translation import ugettext_lazy as _
+from django_contact_list.exceptions import InvalidAccountName
 from django_contact_list.backends.base import Backend
 import re
 import urlparse
@@ -97,6 +97,11 @@ class GooglePlusBackend(SocialNetworkBackend):
 
 
 class TwitterBackend(SocialNetworkBackend):
+    """
+
+    >>> backend = TwitterBackend()
+
+    """
     title = _('Twitter')
     url = 'https://twitter.com/@{account}'
 
