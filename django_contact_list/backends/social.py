@@ -5,22 +5,29 @@ from __future__ import print_function
 from __future__ import absolute_import
 from __future__ import division
 from django.utils.translation import ugettext_lazy as _
+from django.utils import six
 from django_contact_list.exceptions import InvalidAccountName
 from django_contact_list.backends.base import Backend
 import re
-import urlparse
+
+
+urlparse = six.moves.urllib.parse.urlparse
 
 
 class SocialNetworkBackend(Backend):
     allowed_domains = []
     url = '{account}'
     no_follow = True
+    account_re = '.*?'
 
     def get_account_name(self, value):
-        bits = urlparse.urlparse(value)
+        bits = urlparse(value)
 
         if not bits.netloc:
             return bits.path
+
+        if bits.netloc.lower() not in self.allowed_domains:
+            raise InvalidAccountName()
 
         regex = re.compile(self.get_regex_pattern(), re.U | re.I)
         match = regex.search(value)
@@ -30,7 +37,7 @@ class SocialNetworkBackend(Backend):
         raise InvalidAccountName()
 
     def get_regex_pattern(self):
-        bits = urlparse.urlparse(self.url)
+        bits = urlparse(self.url)
         pattern = bits.path.replace('{account}', '(?P<account>.*?)')
         host = '|'.join([b.lstrip('www.') for b in self.get_allowed_domains()])
         host = 'https?://' + '(www\.)?(?P<host>' + host + ')' + pattern + '$'
@@ -38,7 +45,7 @@ class SocialNetworkBackend(Backend):
 
     def get_allowed_domains(self):
         return list(set([b for b in self.allowed_domains +
-                         [urlparse.urlparse(self.url).netloc]
+                         [urlparse(self.url).netloc]
                          if b is not None]))
 
     def get_link(self, value):
@@ -51,7 +58,7 @@ class SocialNetworkBackend(Backend):
         try:
             self.get_account_name(value)
         except InvalidAccountName:
-            self.raise_error(_('Incorrect %s account name') % self.title)
+            self.raise_error(_('Incorrect %s account name: %s') % (self.title, value))
 
 
 class VkontakteBackend(SocialNetworkBackend):
@@ -101,12 +108,51 @@ class TwitterBackend(SocialNetworkBackend):
 
     >>> backend = TwitterBackend()
 
+    >>> str(backend.get_link('marazmiki'))
+    'https://twitter.com/@marazmiki'
+
+    >>> str(backend.get_html('marazmiki'))
+    '<a href="https://twitter.com/@marazmiki" rel="nofollow">marazmiki</a>'
+
+    >>> backend.validate('marazmiki')
+
+    >>> backend.validate('http://twitter.com/marazmiki')
+
+    >>> backend.validate('http://twitter.com/@marazmiki')
+
+    >>> backend.validate('https://twitter.com/marazmiki')
+
+    >>> backend.validate('https://twitter.com/@marazmiki')
+
+    >>> backend.validate('http://vk.com/durov')
+    Traceback (most recent call last): 
+      ... 
+    ValidationError: ...
+
     """
+    account_re = '^@?(\w+)$'
     title = _('Twitter')
     url = 'https://twitter.com/@{account}'
+    allowed_domains = ['twitter.com', 'www.twitter.com']
+
+    def validate(self, value):
+        bits = urlparse(value)
+
+        if bits.netloc and bits.netloc.lower() not in self.allowed_domains:
+            self.raise_error('Wrong domain')
+
+
+        if not bits.netloc:
+            if not re.compile(self.account_re).search(bits.path.strip('/')):
+                self.raise_error('wrong account name')
+
+
+        regex = re.compile(r'^https?://(www\.)?.twitter\.com/\@?(\w+)/?$', re.I | re.U)
+        if not regex.search(value):
+            self.raise_error('Wrong: %s' % value)
 
     def get_regex_pattern(self):
-        return '^https?://(www\.)?twitter\.com/\@?(?P<account>.*?)$'
+        return '^https?://(www\.)?twitter\.com/\@?(?P<account>[a-zA-Z0-9_]*+)$'
 
 
 class YoutubeBackend(SocialNetworkBackend):
